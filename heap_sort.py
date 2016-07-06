@@ -50,7 +50,3 @@ def heap_sort(nums):
 	while h.size:
 		h.extract_min()
 	print h
-
-nums = [15, 6, 8, 9, 10, 11, 12]
-heap_sort(nums)
-
