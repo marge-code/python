@@ -1,46 +1,55 @@
 class Heap:
-	def __init__(self):
-		tree = [None]
-		self.tree = tree
-		size = len(self.tree) - 1
-		self.size = size
+    def __init__(self):
+        self.tree = [None]
 
-	def insert(self, x):
-		self.tree.append(x)
-		i = len(self.tree) - 1
-		while i >= 1 and self.tree[i / 2] > self.tree[i]:
-			self._swap(self.tree, i / 2, i)
-			i /= 2
-		self.size = len(self.tree) - 1
+    @property 
+    def size(self):
+        return len(self.tree) - 1
 
-	def _swap(self, tree, i, j):
-		tree[i], tree[j] = tree[j], tree[i]
+    def insert(self, item):
+        self.tree.append(item)
+        i = len(self.tree) - 1
+        while i > 1 and self.tree[self._get_parent(i)] > self.tree[i]:
+            self._swap(i, self._get_parent(i))
+            i = self._get_parent(i)
 
-	def extract_min(self):
-		min_el = self.tree[1]
-		print 'min: {}'.format(self.tree[1])
-		size = self.size
-		self._swap(self.tree, 1, size)
-		self.size -= 1
-		i = 1
-		min_child_index = self._get_min_child_index(i, self.size)
-		while min_child_index and self.tree[i] > self.tree[min_child_index]:
-			self._swap(self.tree, i, min_child_index)
-			i = min_child_index
-			min_child_index = self._get_min_child_index(i, self.size)
-			
-	def _get_min_child_index(self, i, size):
-		left = i * 2
-		right = i * 2 + 1
-		if left > size:
-			return None
-		elif right > size:
-			return left
-		else:
-			return left if self.tree[left] <= self.tree[right] else right
-		
-	def __str__(self):
-		return str(self.tree)
+    def extract_min(self):
+        min_el = self.tree[1]
+        self._swap(1, self.size)
+        self.tree.pop(self.size)
+        i = 1
+        min_child = self._get_min_child(i)
+        while min_child and self.tree[i] > self.tree[min_child]:
+            self._swap(i, self._get_min_child(i))
+            i = min_child
+            min_child = self._get_min_child(i)
+        return min_el
+
+
+    def _get_parent(self, i):
+        return i / 2
+
+    def _get_left(self, i):
+        return i * 2
+
+    def _get_right(self, i):
+        return i * 2 + 1
+
+    def _get_min_child(self, i):
+        left = self._get_left(i)
+        right = self._get_right(i)
+        if left > self.size:
+            return None
+        elif right > self.size:
+            return left
+        else:
+            return min(left, right)
+
+    def _swap(self, i, j):
+        self.tree[i], self.tree[j] = self.tree[j], self.tree[i]
+
+    def __str__(self):
+        return ' '.join(map(str, self.tree))
 
 
 def heap_sort(nums):
