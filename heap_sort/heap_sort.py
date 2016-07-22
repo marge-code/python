@@ -1,6 +1,6 @@
 import random
 
-class Heap:
+class BinaryHeap:
     def __init__(self):
         self.tree = [None]
 
@@ -62,15 +62,15 @@ class Heap:
 class EmptyHeapError(Exception):
     pass
 
-def heap_sort(nums):
-    h = Heap()
-    for num in nums:
-        h.insert(num)
-    sorted_nums = []
+def heap_sort(iterable):
+    h = BinaryHeap()
+    for item in iterable:
+        h.insert(item)
+    sorted_iterable = []
     while not h.is_empty():
         min_element = h.extract_min()
-        sorted_nums.append(min_element)
-    return sorted_nums
+        sorted_iterable.append(min_element)
+    return sorted_iterable
 
 def test():
     for i in range(100):
@@ -79,6 +79,3 @@ def test():
 
 if __name__ == "__main__":
     test()
-
-h = Heap()
-h.extract_min()
