@@ -19,7 +19,7 @@ class Heap:
 
     def extract_min(self):
         if self.is_empty():
-            raise ValueError('Extract from empty heap')
+            raise EmptyHeapError('Extract from empty heap')
         min_element = self.tree[1]
         self._swap(1, self.size)
         self.tree.pop()
@@ -59,6 +59,8 @@ class Heap:
     def __str__(self):
         return ' '.join(map(str, self.tree[1:]))
 
+class EmptyHeapError(Exception):
+    pass
 
 def heap_sort(nums):
     h = Heap()
@@ -77,3 +79,6 @@ def test():
 
 if __name__ == "__main__":
     test()
+
+h = Heap()
+h.extract_min()
