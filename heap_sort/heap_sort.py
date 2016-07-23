@@ -8,6 +8,10 @@ class BinaryHeap:
     def size(self):
         return len(self.tree) - 1
 
+    @property
+    def _root_node(self):
+        return 1
+
     def insert(self, item):
         self.tree.append(item)
         i = self.size
@@ -23,7 +27,7 @@ class BinaryHeap:
         min_element = self.tree[1]
         self._swap(1, self.size)
         self.tree.pop()
-        i = 1
+        i = self._root_node
         min_child_i = self._get_min_child(i)
         while min_child_i and self.tree[i] > self.tree[min_child_i]:
             self._swap(i, min_child_i)
