@@ -76,6 +76,8 @@ def test():
     for i in range(100):
         test_nums = [random.randint(0, 100) for i in range(1000)]
         assert heap_sort(test_nums) == sorted(test_nums)
+    assert heap_sort([]) == []
+    assert heap_sort(['1']) == ['1']
 
 if __name__ == "__main__":
     test()
