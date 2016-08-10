@@ -1,5 +1,3 @@
-import random
-
 class HashTable:
 
     DEFAULT_SIZE = 19
