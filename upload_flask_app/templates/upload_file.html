@@ -1,0 +1,50 @@
+<!doctype html>
+<title>Upload File:</title>
+<form name="upload">
+  <input type="file" name="file_to_upload">
+  <input type="submit" value="Upload">
+</form>
+
+<script>
+document.forms.upload.onsubmit = function() {
+  var input = this.elements.file_to_upload;
+  var file = input.files[0];
+  if (file) {
+    upload(file);
+  }
+  return false;
+}
+
+function clean_page() {
+  document.body.innerHTML = ""
+}
+
+function calculate_progress(event) {
+  var progress = (event.loaded * 100.0) / event.total
+  return progress.toFixed(2)
+}
+
+function upload(file) {
+  var req = new XMLHttpRequest();
+
+  req.upload.onprogress = function(event) {
+    clean_page()
+    document.body.appendChild(
+      document.createTextNode(
+        'Uploading progress: ' + calculate_progress(event) + "%"
+      )
+    );
+  }
+
+  req.onload = req.onerror = function() {
+    if (this.status == 200) {
+      alert("Upload completed!");
+    } else {
+      alert("Upload failed")
+    }
+  };
+
+  req.open("POST", "", true);
+  req.send(file);
+}
+</script>

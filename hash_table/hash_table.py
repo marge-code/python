@@ -1,3 +1,5 @@
+import random
+
 class HashTable:
 
     DEFAULT_SIZE = 19
@@ -116,3 +118,16 @@ class HashTableIterator:
                 return next_key
             self.current_item = 0
         raise StopIteration
+
+def test():
+    h = HashTable()
+    for item in range(100):
+        h.insert(item, random.randint(1, 100))
+    assert (1 in h) == True
+    assert h.delete(2) == True
+    assert h.search(2) == None
+    assert h[5] == h.search(5)
+
+
+if __name__ == '__main__':
+    test()
