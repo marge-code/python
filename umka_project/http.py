@@ -1,5 +1,4 @@
 import socket
-import time
 import datetime
 import httplib
 
@@ -20,6 +19,11 @@ class HTTPResponse:
         self.status = status
         self.headers = headers
         self.content = content
+        self.set_common_headers()
+
+    def set_common_headers(self):
+        self.headers['Content-Length'] = len(self.content)
+        self.headers['Date'] = datetime.datetime.now()
 
     @staticmethod
     def redirect(target_url):
@@ -27,11 +31,7 @@ class HTTPResponse:
 
     @staticmethod
     def ok(content):
-        headers = dict()
-        headers['Content-Length'] = len(content)
-        headers['Date'] = datetime.datetime.now()
-        #headers['Set-Cookie'] = 'name=User-Davie'
-        return HTTPResponse(200, headers, content)
+        return HTTPResponse(200, dict(), content)
 
     def set_cookies(self, cookies):
         cookies_items = ['{}={}'.format(k, v) for k, v in cookies.items()]
@@ -74,6 +74,7 @@ class HTTPServer(tcp.TCPServer):
             data += '{}: {}\n'.format(k, v)
         data += "\n\n"
         data += response.content
+        tcp.logger.info('write_response: {}'.format(data))
         return data
 
     def is_full_request(self, data):
@@ -82,29 +83,4 @@ class HTTPServer(tcp.TCPServer):
 
 
 
-def reverse_string(http_request):
-    response =  HTTPResponse.ok(content = http_request.content[::-1])
-
-    if 'Cookie' in http_request.headers:
-        cookies = parse_cookies(http_request.headers['Cookie'])  
-        name = cookies['name']
-    else:
-        name = 'Username'
-        tcp.logger.info('Set Cookies')
-        response.set_cookies({'name': 'User-Davie', 'id': '123123'})
-
-    response.content = 'Hello, {}!\n'.format(name) + response.content
-    return response
-
-def parse_cookies(line):
-    cookies = dict()
-    items = line.split('; ')
-    for item in items:
-        key, value = item.split('=')
-        cookies[key] = value
-    return cookies
-
-
-s = HTTPServer(reverse_string)
-s.run()
 
