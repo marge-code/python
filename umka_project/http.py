@@ -74,7 +74,7 @@ class HTTPServer(tcp.TCPServer):
             data += '{}: {}\n'.format(k, v)
         data += "\n\n"
         data += response.content
-        tcp.logger.info('write_response: {}'.format(data))
+        tcp.logger.info('write_response: {}'.format(data.replace('\n', '\\n')))
         return data
 
     def is_full_request(self, data):

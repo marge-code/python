@@ -1,12 +1,18 @@
 import http
 import tcp
+import uuid
 
 def reverse_string(http_request):
     if 'Cookie' in http_request.headers:
         cookies = parse_cookies(http_request.headers['Cookie'])  
         name = cookies['name']
-        content = 'Hello, {}!\n'.format(name) + http_request.content[::-1]
+        content = '<!DOCTYPE html>'
+        content += '<p>'
+        content += 'Hello, {}!\n'.format(name) + http_request.content[::-1]
+        content += '</p>'
+        content += '</html>'
         response =  http.HTTPResponse.ok(content)
+        response.set_cookies({'name': 'User-' + str(uuid.uuid4())})
     else:
         name = 'Username'
         content = 'Hello, {}!\n'.format(name) + http_request.content[::-1]

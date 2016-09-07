@@ -7,4 +7,5 @@ def init_logger():
     formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
     ch.setFormatter(formatter)
     logger.addHandler(ch)
+    logger.addHandler(logging.FileHandler("umka.log"))
     return logger
