@@ -1,14 +1,13 @@
 import http
-from http import HTTPResponse
+
 import tcp
 import uuid
 
-import form
+from html import to_html
+from http import HTTPResponse
+from app import WebApplication
 
 def reverse_string(http_request):
-    #response = HTTPResponse.redirect("http://www.google.ru/")
-    #response.set_cookies(...)
-
     if 'Cookie' in http_request.headers:
         cookies = parse_cookies(http_request.headers['Cookie'])  
         name = cookies['name']
@@ -31,10 +30,37 @@ def parse_cookies(line):
 
 def generate_content(name, http_request):
     user_data = 'Hello, {}!\n'.format(name) + http_request.content[::-1]
-    return form.content.format(user_data)
+    return html.html_form.format(user_data)
 
 
+#s = http.HTTPServer(reverse_string)
+#s.run()
 
 
-s = http.HTTPServer(reverse_string)
-s.run()
+def index_url_handler(request):
+    return http.HTTPResponse.ok(to_html("Hello, world!"))
+
+def reverse(request):
+    return http.HTTPResponse.ok(request.content[::-1])
+
+def login(request):
+    name = request.url[len('/login/'):]
+    response =  http.HTTPResponse.redirect('/home')
+    #response = http.HTTPResponse.ok('')
+    response.set_cookies({'username': name})
+    return response
+
+def home(request):
+    if request.cookies:
+        name = request.cookies['username']
+    else:
+        name = 'user'
+    return http.HTTPResponse.ok(to_html('Home, sweet home, {}'.format(name)))
+
+app = WebApplication()
+
+app.register_url_handler('/index', index_url_handler)
+app.register_url_handler('/reverse', reverse)
+app.register_url_handler('/login/.*', login)
+app.register_url_handler('/home', home)
+app.run()

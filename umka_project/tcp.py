@@ -11,7 +11,7 @@ class TCPServer(object):
     def __init__(self):
         pass
 
-    def handle(self, data):
+    def handle_data(self, data):
         raise NotImplementedError
 
     def accept_client(self):
@@ -28,8 +28,7 @@ class TCPServer(object):
                 logger.info('Close connection')
                 break
 
-            logger.info('buff: "{}"'.format(buff))
-            response = self.handle(buff)
+            response = self.handle_data(buff)
             if response:
                 logger.info('response: "{}"'.format(response))
                 connection.send(response)

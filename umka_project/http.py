@@ -13,6 +13,19 @@ class HTTPRequest:
         self.protocol_version = protocol_version
         self.headers = headers
         self.content = content
+        if 'Cookie' in self.headers:
+            self.cookies = self.parse_cookies(self.headers['Cookie'])
+        else:
+            self.cookies = ''
+
+    def parse_cookies(self, header):
+        cookies = dict()
+        items = header.split('; ')
+        for item in items:
+            key, value = item.split('=')
+            cookies[key] = value
+        return cookies  
+
     
 
 class HTTPResponse:
@@ -37,6 +50,10 @@ class HTTPResponse:
     def ok(content):
         return HTTPResponse(200, dict(), content)
 
+    @staticmethod
+    def not_found(content):
+        return HTTPResponse(404, dict(), content)
+
     def set_cookies(self, user_cookies):
         self.cookies = Cookie.SimpleCookie(user_cookies).output()
 
@@ -44,15 +61,20 @@ class HTTPResponse:
 
 
 class HTTPServer(tcp.TCPServer):
-    def __init__(self, handler = lambda data: data):
-        self.request_handler = handler
+    def __init__(self, handler = None):
+        self.handler = handler
 
-    def handle(self, data):
+
+    def handle_http_request(self, request):
+        return self.handler(request)
+
+
+    def handle_data(self, data):
         if self.is_full_request(data):
             request = self.parse_request(data)
-            response = self.request_handler(request)
+            response = self.handle_http_request(request)
             return self.write_response(response)
-        
+       
 
     def parse_request(self, data):        
         head, body = data.split('\r\n\r\n')
@@ -66,6 +88,7 @@ class HTTPServer(tcp.TCPServer):
             headers[item[0]] = item[1]
 
         h = HTTPRequest(method, url, protocol_version, headers, body)
+        tcp.logger.info('Parse request headers: {}'.format(headers))
         return h
 
     def write_response(self, response):
